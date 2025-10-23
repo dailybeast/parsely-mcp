@@ -31,7 +31,7 @@ export function loadConfig(): Config {
     parsely: {
       apiKey: getRequiredEnv('PARSELY_API_KEY'),
       apiSecret: getRequiredEnv('PARSELY_API_SECRET'),
-      baseUrl: getOptionalEnv('PARSELY_API_BASE_URL', 'https://api.parse.ly/v2'),
+      baseUrl: getOptionalEnv('PARSELY_API_BASE_URL', 'https://api.parsely.com/v2'),
     },
     server: {
       port: parseInt(getOptionalEnv('PORT', '3000'), 10),
