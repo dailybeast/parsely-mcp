@@ -6,6 +6,7 @@ export default [
   js.configs.recommended,
   {
     files: ['src/**/*.ts'],
+    ignores: ['**/__tests__/**', '**/*.test.ts'],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

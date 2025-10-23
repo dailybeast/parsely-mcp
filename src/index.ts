@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { ParselyClient } from './services/parsely-client.js';
 import { config } from './config/index.js';
+import express from 'express';
 
 const server = new Server(
   {
@@ -304,12 +305,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-// Start the server
+// Start the HTTP server with SSE
 async function main() {
-  const transport = new StdioServerTransport();
-  await server.connect(transport);
-  console.error('Parse.ly MCP server running on stdio');
-  console.error(`API Key: ${config.parsely.apiKey.substring(0, 8)}...`);
+  const app = express();
+  const port = config.server.port;
+
+  // Health check endpoint
+  app.get('/health', (_req, res) => {
+    res.json({ status: 'ok', service: 'parsely-mcp' });
+  });
+
+  // SSE endpoint for MCP
+  app.get('/sse', async (req, res) => {
+    console.error('New SSE connection established');
+
+    const transport = new SSEServerTransport('/message', res);
+    await server.connect(transport);
+
+    // Handle client disconnect
+    req.on('close', () => {
+      console.error('SSE connection closed');
+    });
+  });
+
+  // Message endpoint for client requests
+  app.post('/message', async (req, res) => {
+    // SSE transport handles the message routing
+    res.status(200).end();
+  });
+
+  app.listen(port, () => {
+    console.error(`Parse.ly MCP server running on http://localhost:${port}`);
+    console.error(`SSE endpoint: http://localhost:${port}/sse`);
+    console.error(`API Key: ${config.parsely.apiKey.substring(0, 8)}...`);
+  });
 }
 
 main().catch((error) => {
