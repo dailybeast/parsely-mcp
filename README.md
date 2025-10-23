@@ -24,7 +24,7 @@ A Model Context Protocol (MCP) server that provides access to Parse.ly analytics
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/parsely-mcp.git
+git clone https://github.com/dailybeast/parsely-mcp.git
 cd parsely-mcp
 ```
 
@@ -157,7 +157,7 @@ MIT License - see [LICENSE](LICENSE) for details
 ## Support
 
 For issues and questions:
-- GitHub Issues: https://github.com/yourusername/parsely-mcp/issues
+- GitHub Issues: https://github.com/dailybeast/parsely-mcp/issues
 - Parse.ly Documentation: https://docs.parse.ly/
 
 ## Acknowledgments
