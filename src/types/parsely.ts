@@ -91,15 +91,33 @@ export interface ParselySharesResponse {
 export interface ParselyAnalyticsParams {
   apikey: string;
   secret: string;
+  period_start?: string;
+  period_end?: string;
+  pub_date_start?: string;
+  pub_date_end?: string;
   days?: number;
   limit?: number;
   page?: number;
   sort?: string;
+  section?: string;
+  domain?: string;
+  tag?: string;
   [key: string]: string | number | undefined;
 }
 
-export interface ParselyReferrersParams extends ParselyAnalyticsParams {
-  type?: string;
+export interface ParselyReferrersParams {
+  apikey: string;
+  secret: string;
+  period_start?: string;
+  period_end?: string;
+  pub_date_start?: string;
+  pub_date_end?: string;
+  days?: number;
+  limit?: number;
+  page?: number;
+  section?: string;
+  domain?: string;
+  [key: string]: string | number | undefined;
 }
 
 export interface ParselySearchParams {

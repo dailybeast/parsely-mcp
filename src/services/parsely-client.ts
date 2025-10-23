@@ -59,17 +59,22 @@ export class ParselyClient {
   }
 
   async getReferrers(
+    type: 'social' | 'search' | 'other' | 'internal' = 'social',
     params: Partial<Omit<ParselyReferrersParams, 'apikey' | 'secret'>> = {}
   ): Promise<ParselyReferrersResponse> {
     const fullParams: Record<string, string | number | undefined> = {
       apikey: this.apiKey,
       secret: this.apiSecret,
-      days: params.days ?? 7,
       limit: params.limit ?? 10,
       ...params,
     };
 
-    return this.request<ParselyReferrersResponse>('referrers/posts', fullParams);
+    // Only add days if no period_start/period_end specified
+    if (!params.period_start && !params.period_end) {
+      fullParams.days = params.days ?? 7;
+    }
+
+    return this.request<ParselyReferrersResponse>(`referrers/${type}`, fullParams);
   }
 
   async search(

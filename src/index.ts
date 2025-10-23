@@ -29,13 +29,29 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
     tools: [
       {
         name: 'get_analytics_posts',
-        description: 'Get analytics data for top posts from Parse.ly. Returns metrics like views, visitors, and engagement time.',
+        description: 'Get analytics data for top posts from Parse.ly. Returns metrics like views, visitors, and engagement time. Supports specific date ranges.',
         inputSchema: {
           type: 'object',
           properties: {
+            period_start: {
+              type: 'string',
+              description: 'Start date for traffic window (YYYY-MM-DD)',
+            },
+            period_end: {
+              type: 'string',
+              description: 'End date for traffic window (YYYY-MM-DD)',
+            },
+            pub_date_start: {
+              type: 'string',
+              description: 'Filter by content published after this date',
+            },
+            pub_date_end: {
+              type: 'string',
+              description: 'Filter by content published before this date',
+            },
             days: {
               type: 'number',
-              description: 'Number of days to look back (default: 7)',
+              description: 'Number of days to look back (default: 7, ignored if period_start set)',
               default: 7,
             },
             limit: {
@@ -46,6 +62,14 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             sort: {
               type: 'string',
               description: 'Sort field (e.g., "hits", "avg_engaged_time")',
+            },
+            section: {
+              type: 'string',
+              description: 'Filter by content section',
+            },
+            tag: {
+              type: 'string',
+              description: 'Filter by content tag',
             },
           },
         },
@@ -90,13 +114,35 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'get_referrers',
-        description: 'Get referrer data from Parse.ly. Shows where traffic is coming from (social, search, direct, etc.).',
+        description: 'Get referrer data from Parse.ly. Shows where traffic is coming from by type: social, search, other, or internal. Supports specific date ranges for comparison analysis.',
         inputSchema: {
           type: 'object',
           properties: {
+            type: {
+              type: 'string',
+              description: 'Referrer type: "social", "search", "other", or "internal" (default: "social")',
+              enum: ['social', 'search', 'other', 'internal'],
+              default: 'social',
+            },
+            period_start: {
+              type: 'string',
+              description: 'Start date for traffic window (YYYY-MM-DD or YYYY-MM-DDThh:mm). Use for specific date queries.',
+            },
+            period_end: {
+              type: 'string',
+              description: 'End date for traffic window (YYYY-MM-DD or YYYY-MM-DDThh:mm). Use same as period_start for single day.',
+            },
+            pub_date_start: {
+              type: 'string',
+              description: 'Filter by content published after this date (YYYY-MM-DD)',
+            },
+            pub_date_end: {
+              type: 'string',
+              description: 'Filter by content published before this date (YYYY-MM-DD)',
+            },
             days: {
               type: 'number',
-              description: 'Number of days to look back (default: 7)',
+              description: 'Number of days to look back (default: 7). Ignored if period_start/period_end provided.',
               default: 7,
             },
             limit: {
@@ -104,9 +150,13 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
               description: 'Number of results to return (default: 10)',
               default: 10,
             },
-            type: {
+            section: {
               type: 'string',
-              description: 'Filter by referrer type (e.g., "social", "search", "internal")',
+              description: 'Filter by content section',
+            },
+            domain: {
+              type: 'string',
+              description: 'Filter by specific domain',
             },
           },
         },
@@ -196,7 +246,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
 
       case 'get_referrers': {
-        const result = await parselyClient.getReferrers(args as Record<string, string | number>);
+        const { type, ...params } = args as { type?: 'social' | 'search' | 'other' | 'internal'; [key: string]: unknown };
+        const referrerType = type || 'social';
+        const result = await parselyClient.getReferrers(referrerType, params as Record<string, string | number>);
         return {
           content: [
             {
