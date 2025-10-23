@@ -47,11 +47,11 @@ export class ParselyClient {
     aspect: 'posts' | 'authors' | 'tags',
     params: Partial<Omit<ParselyAnalyticsParams, 'apikey' | 'secret'>> = {}
   ): Promise<ParselyAnalyticsResponse> {
-    const fullParams: ParselyAnalyticsParams = {
+    const fullParams: Record<string, string | number | undefined> = {
       apikey: this.apiKey,
       secret: this.apiSecret,
-      days: params.days || 7,
-      limit: params.limit || 10,
+      days: params.days ?? 7,
+      limit: params.limit ?? 10,
       ...params,
     };
 
@@ -61,11 +61,11 @@ export class ParselyClient {
   async getReferrers(
     params: Partial<Omit<ParselyReferrersParams, 'apikey' | 'secret'>> = {}
   ): Promise<ParselyReferrersResponse> {
-    const fullParams: ParselyReferrersParams = {
+    const fullParams: Record<string, string | number | undefined> = {
       apikey: this.apiKey,
       secret: this.apiSecret,
-      days: params.days || 7,
-      limit: params.limit || 10,
+      days: params.days ?? 7,
+      limit: params.limit ?? 10,
       ...params,
     };
 
@@ -76,11 +76,11 @@ export class ParselyClient {
     query: string,
     params: Partial<Omit<ParselySearchParams, 'apikey' | 'secret' | 'q'>> = {}
   ): Promise<ParselySearchResponse> {
-    const fullParams: ParselySearchParams = {
+    const fullParams: Record<string, string | number | undefined> = {
       apikey: this.apiKey,
       secret: this.apiSecret,
       q: query,
-      limit: params.limit || 10,
+      limit: params.limit ?? 10,
       ...params,
     };
 
@@ -90,11 +90,11 @@ export class ParselyClient {
   async getShares(
     params: Partial<Omit<ParselyAnalyticsParams, 'apikey' | 'secret'>> = {}
   ): Promise<ParselySharesResponse> {
-    const fullParams: ParselyAnalyticsParams = {
+    const fullParams: Record<string, string | number | undefined> = {
       apikey: this.apiKey,
       secret: this.apiSecret,
-      days: params.days || 7,
-      limit: params.limit || 10,
+      days: params.days ?? 7,
+      limit: params.limit ?? 10,
       ...params,
     };
 
