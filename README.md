@@ -55,6 +55,10 @@ npm run build
 npm start
 ```
 
+The server will start on `http://localhost:3000` with the following endpoints:
+- **SSE endpoint**: `http://localhost:3000/sse` - MCP Server-Sent Events transport
+- **Health check**: `http://localhost:3000/health` - Server health status
+
 ### Docker
 
 1. Build the Docker image:
