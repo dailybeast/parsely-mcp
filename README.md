@@ -1,20 +1,24 @@
 # Parse.ly MCP Server
 
-A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
+A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API via **streaming HTTP with Server-Sent Events (SSE)**. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
+
+**Built with [Claude Code](https://claude.ai/code)** - See [CLAUDE.md](CLAUDE.md) for development guidance.
 
 ## Features
 
-- **Analytics Tools**: Get metrics for top posts, authors, and tags
-- **Referrer Data**: Track traffic sources (social, search, direct, etc.)
+- **Streaming HTTP Transport**: Server-Sent Events (SSE) for real-time MCP communication
+- **Analytics Tools**: Get metrics for top posts, authors, and tags with date-based queries
+- **Referrer Data**: Track traffic sources by type (social, search, other, internal)
 - **Content Search**: Search through Parse.ly content
 - **Social Shares**: View share counts across platforms
+- **Date Range Support**: Query specific days or ranges for time-based comparisons
 - **Type-Safe**: Built with TypeScript for reliability
 - **Well-Tested**: Comprehensive unit tests with mocked API responses
-- **Docker Support**: Easy containerized deployment
+- **Docker Support**: Easy containerized deployment with port exposure
 
 ## Prerequisites
 
-- Node.js >= 18.0.0
+- Node.js >= 20.0.0
 - Parse.ly API credentials (API key and secret)
 - Get your credentials from https://dash.parse.ly/
 
@@ -162,6 +166,14 @@ For issues and questions:
 
 ## Acknowledgments
 
-Built using:
-- [Model Context Protocol SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [Parse.ly API](https://www.parse.ly/)
+- **Built with [Claude Code](https://claude.ai/code)** - AI-assisted development
+- [Model Context Protocol SDK](https://github.com/modelcontextprotocol/typescript-sdk) - TypeScript SDK for MCP
+- [Parse.ly API](https://www.parse.ly/) - Content analytics platform
+
+## Development
+
+This project uses [CLAUDE.md](CLAUDE.md) for AI-assisted development guidance. The file contains:
+- Architecture overview and code organization
+- Common development commands
+- Testing requirements and conventions
+- Open-source best practices
