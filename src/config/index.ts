@@ -1,7 +1,14 @@
 import dotenv from 'dotenv';
+import { existsSync } from 'fs';
+import { resolve } from 'path';
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables from .env file if it exists
+// Environment variables set directly in the environment take precedence
+const envPath = resolve(process.cwd(), '.env');
+if (existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+}
+// If .env doesn't exist, environment variables should already be set in the environment
 
 export interface Config {
   parsely: {
