@@ -36,7 +36,8 @@ docker run -p 3000:3000 parsely-mcp
 The server follows the Model Context Protocol specification using the TypeScript SDK. It exposes Parse.ly analytics data through MCP tools that can be consumed by Claude and other AI assistants.
 
 ### Transport Layer
-- Uses HTTP transport (stdio transport may also be supported)
+- Uses Streamable HTTP transport via the `/mcp` endpoint
+- Supports stateful sessions with `mcp-session-id` headers
 - Exposes a configurable port for client connections
 - Authentication uses Parse.ly API keys and secrets
 
