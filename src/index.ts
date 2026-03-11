@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
+import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import {
 	CallToolRequestSchema,
 	ListToolsRequestSchema,
@@ -339,39 +340,72 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 	}
 });
 
-// Start the HTTP server with SSE
+// Start the HTTP server with Streamable HTTP transport
 async function main() {
 	const app = express();
 	const port = config.server.port;
+
+	// Parse JSON request bodies
+	app.use(express.json());
 
 	// Health check endpoint
 	app.get("/health", (_req, res) => {
 		res.json({ status: "ok", service: "parsely-mcp" });
 	});
 
-	// SSE endpoint for MCP
-	app.get("/sse", async (req, res) => {
-		console.error("New SSE connection established");
+	// Map of session ID to transport for stateful session management
+	const transports = new Map<string, StreamableHTTPServerTransport>();
 
-		const transport = new SSEServerTransport("/message", res);
-		await server.connect(transport);
+	// Handle all MCP requests on /mcp endpoint
+	app.all("/mcp", async (req, res) => {
+		const sessionId = req.headers["mcp-session-id"] as string | undefined;
 
-		// Handle client disconnect
-		req.on("close", () => {
-			console.error("SSE connection closed");
-		});
-	});
+		if (req.method === "GET" || req.method === "DELETE") {
+			const transport = sessionId ? transports.get(sessionId) : undefined;
+			if (!transport) {
+				res.status(400).json({ error: "No valid session found" });
+				return;
+			}
+			await transport.handleRequest(req, res);
+			return;
+		}
 
-	// Message endpoint for client requests
-	app.post("/message", async (req, res) => {
-		// SSE transport handles the message routing
-		res.status(200).end();
+		if (req.method === "POST") {
+			// If we have a session ID and it maps to an existing transport, reuse it
+			if (sessionId && transports.has(sessionId)) {
+				const transport = transports.get(sessionId)!;
+				await transport.handleRequest(req, res, req.body);
+				return;
+			}
+
+			// New session: create a transport and connect it to a new server instance
+			const transport = new StreamableHTTPServerTransport({
+				sessionIdGenerator: () => randomUUID(),
+				onsessioninitialized: (id) => {
+					transports.set(id, transport);
+					console.error(`Session initialized: ${id}`);
+				},
+			});
+
+			transport.onclose = () => {
+				if (transport.sessionId) {
+					transports.delete(transport.sessionId);
+					console.error(`Session closed: ${transport.sessionId}`);
+				}
+			};
+
+			await server.connect(transport);
+			await transport.handleRequest(req, res, req.body);
+			return;
+		}
+
+		res.status(405).json({ error: "Method not allowed" });
 	});
 
 	const host = "0.0.0.0";
 	app.listen(port, host, () => {
 		console.error(`Parse.ly MCP server running on http://${host}:${port}`);
-		console.error(`SSE endpoint: http://${host}:${port}/sse`);
+		console.error(`Streamable HTTP endpoint: http://${host}:${port}/mcp`);
 		console.error(`API Key: ${config.parsely.apiKey.substring(0, 8)}...`);
 	});
 }
