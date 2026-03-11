@@ -75,11 +75,11 @@ describe('ParselyClient', () => {
         json: async () => mockResponse,
       });
 
-      const result = await client.getReferrers({ type: 'search' });
+      const result = await client.getReferrers('search');
 
       expect(result.data).toEqual(mockResponse.data);
       expect(global.fetch).toHaveBeenCalledWith(
-        expect.stringContaining('referrers/posts')
+        expect.stringContaining('referrers/search')
       );
     });
   });

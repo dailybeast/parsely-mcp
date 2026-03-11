@@ -27,7 +27,7 @@ npm run test:watch     # Run tests in watch mode
 ### Docker
 ```bash
 docker build -t parsely-mcp .
-docker run -p 3000:3000 parsely-mcp
+docker run -p 8742:8742 parsely-mcp
 ```
 
 ## Architecture
@@ -36,7 +36,8 @@ docker run -p 3000:3000 parsely-mcp
 The server follows the Model Context Protocol specification using the TypeScript SDK. It exposes Parse.ly analytics data through MCP tools that can be consumed by Claude and other AI assistants.
 
 ### Transport Layer
-- Uses HTTP transport (stdio transport may also be supported)
+- Uses Streamable HTTP transport via the `/mcp` endpoint
+- Supports stateful sessions with `mcp-session-id` headers
 - Exposes a configurable port for client connections
 - Authentication uses Parse.ly API keys and secrets
 
@@ -95,7 +96,7 @@ npm test -- --testNamePattern="search" # Test by name pattern
 The server requires Parse.ly API credentials:
 - `PARSELY_API_KEY` - Your Parse.ly API key
 - `PARSELY_API_SECRET` - Your Parse.ly API secret
-- `PORT` - HTTP transport port (default: 3000)
+- `PORT` - HTTP transport port (default: 8742)
 
 ### Environment Variable Handling
 
@@ -111,7 +112,7 @@ Example `.env.example`:
 ```
 PARSELY_API_KEY=your_api_key_here
 PARSELY_API_SECRET=your_api_secret_here
-PORT=3000
+PORT=8742
 ```
 
 ## Open Source Licensing

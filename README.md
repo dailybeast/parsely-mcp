@@ -1,12 +1,12 @@
 # Parse.ly MCP Server
 
-A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API via **streaming HTTP with Server-Sent Events (SSE)**. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
+A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API via **Streamable HTTP transport**. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
 
 **Built with [Claude Code](https://claude.ai/code)** - See [CLAUDE.md](CLAUDE.md) for development guidance.
 
 ## Features
 
-- **Streaming HTTP Transport**: Server-Sent Events (SSE) for real-time MCP communication
+- **Streamable HTTP Transport**: Modern MCP Streamable HTTP protocol with session management
 - **Analytics Tools**: Get metrics for top posts, authors, and tags with date-based queries
 - **Referrer Data**: Track traffic sources by type (social, search, other, internal)
 - **Content Search**: Search through Parse.ly content
@@ -46,7 +46,7 @@ cp .env.example .env
 ```
 PARSELY_API_KEY=your_api_key_here
 PARSELY_API_SECRET=your_api_secret_here
-PORT=3000
+PORT=8742
 ```
 
 5. Build the project:
@@ -59,9 +59,9 @@ npm run build
 npm start
 ```
 
-The server will start on `http://localhost:3000` with the following endpoints:
-- **SSE endpoint**: `http://localhost:3000/sse` - MCP Server-Sent Events transport
-- **Health check**: `http://localhost:3000/health` - Server health status
+The server will start on `http://localhost:8742` with the following endpoints:
+- **MCP endpoint**: `http://localhost:8742/mcp` - Streamable HTTP transport (POST, GET, DELETE)
+- **Health check**: `http://localhost:8742/health` - Server health status
 
 ### Docker
 
@@ -72,7 +72,7 @@ docker build -t parsely-mcp .
 
 2. Run the container with environment variables:
 ```bash
-docker run -e PARSELY_API_KEY=your_key -e PARSELY_API_SECRET=your_secret -p 3000:3000 parsely-mcp
+docker run -e PARSELY_API_KEY=your_key -e PARSELY_API_SECRET=your_secret -p 8742:8742 parsely-mcp
 ```
 
 ## Available Tools
