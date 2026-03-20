@@ -1,7 +1,7 @@
-import { ParselyClient } from '../parsely-client.js';
+import { jest } from '@jest/globals';
 
-// Mock config
-jest.mock('../../config/index.js', () => ({
+// Mock config — must be registered before importing the module under test
+jest.unstable_mockModule('../../config/index.js', () => ({
   config: {
     parsely: {
       apiKey: 'test-key',
@@ -14,11 +14,14 @@ jest.mock('../../config/index.js', () => ({
   },
 }));
 
+// Dynamic import after mock registration
+const { ParselyClient } = await import('../parsely-client.js');
+
 // Mock fetch
-global.fetch = jest.fn();
+global.fetch = jest.fn() as typeof global.fetch;
 
 describe('ParselyClient', () => {
-  let client: ParselyClient;
+  let client: InstanceType<typeof ParselyClient>;
 
   beforeEach(() => {
     client = new ParselyClient();

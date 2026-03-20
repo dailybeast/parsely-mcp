@@ -3,15 +3,22 @@
   "version": "0.1.0",
   "description": "Model Context Protocol server for Parse.ly analytics API",
   "main": "dist/index.js",
+  "bin": {
+    "parsely-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "lint": "eslint 'src/**/*.ts' --ignore-pattern 'src/**/__tests__/**' --ignore-pattern 'src/**/*.test.ts'",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test:watch": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test:coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:integration": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.integration.config.js"
   },
   "keywords": [
     "mcp",
@@ -21,11 +28,14 @@
     "ai",
     "claude"
   ],
-  "author": "",
+  "author": "Ken Peltzer",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dailybeast/parsely-mcp"
+    "url": "git+https://github.com/dailybeast/parsely-mcp.git"
   },
   "engines": {
     "node": ">=20.0.0"
