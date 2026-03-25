@@ -1,6 +1,6 @@
 {
   "name": "parsely-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Model Context Protocol server for Parse.ly analytics API",
   "main": "dist/index.js",
   "bin": {
@@ -11,7 +11,7 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/index.js",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "lint": "eslint 'src/**/*.ts' --ignore-pattern 'src/**/__tests__/**' --ignore-pattern 'src/**/*.test.ts'",
