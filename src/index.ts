@@ -185,10 +185,50 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 							type: "string",
 							description: "Search query string",
 						},
+						pub_date_start: {
+							type: "string",
+							description: "Filter by publication date start (YYYY-MM-DD)",
+						},
+						pub_date_end: {
+							type: "string",
+							description:
+								"Filter by publication date end (YYYY-MM-DD, defaults to now)",
+						},
 						limit: {
 							type: "number",
 							description: "Number of results to return (default: 10)",
 							default: 10,
+						},
+						page: {
+							type: "number",
+							description: "Page number for pagination (default: 1)",
+							default: 1,
+						},
+						section: {
+							type: "string",
+							description: "Filter by content section",
+						},
+						author: {
+							type: "string",
+							description: "Filter by author name",
+						},
+						tag: {
+							type: "string",
+							description: "Filter by tag",
+						},
+						sort: {
+							type: "string",
+							description: "Sort order: 'score' (default) or 'pub_date'",
+						},
+						boost: {
+							type: "string",
+							description:
+								"Sub-sort metric when sort=score (e.g., 'views')",
+						},
+						exclude: {
+							type: "string",
+							description:
+								"Exclude by metadata in format '<meta>:<value>'",
 						},
 					},
 					required: ["query"],
@@ -292,7 +332,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 			case "search_content": {
 				const { query, ...params } = args as {
 					query: string;
-					[key: string]: unknown;
+					[key: string]: string | number | undefined;
 				};
 				if (!query) {
 					throw new Error("Query parameter is required for search");

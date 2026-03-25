@@ -124,7 +124,15 @@ export interface ParselySearchParams {
   apikey: string;
   secret: string;
   q: string;
+  pub_date_start?: string;
+  pub_date_end?: string;
   limit?: number;
   page?: number;
+  section?: string;
+  author?: string;
+  tag?: string;
   sort?: string;
+  boost?: string;
+  exclude?: string;
+  [key: string]: string | number | undefined;
 }
