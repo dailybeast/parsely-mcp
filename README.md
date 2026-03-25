@@ -1,12 +1,12 @@
 # Parse.ly MCP Server
 
-A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API via **Streamable HTTP transport**. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
+A Model Context Protocol (MCP) server that provides access to Parse.ly analytics API. This server enables AI assistants like Claude to query Parse.ly data for content analytics, referrers, search, and social shares.
 
 **Built with [Claude Code](https://claude.ai/code)** - See [CLAUDE.md](CLAUDE.md) for development guidance.
 
 ## Features
 
-- **Streamable HTTP Transport**: Modern MCP Streamable HTTP protocol with session management
+- **Dual Transport**: Supports both stdio (for `npx` usage) and Streamable HTTP transport
 - **Analytics Tools**: Get metrics for top posts, authors, and tags with date-based queries
 - **Referrer Data**: Track traffic sources by type (social, search, other, internal)
 - **Content Search**: Search through Parse.ly content
@@ -23,6 +23,27 @@ A Model Context Protocol (MCP) server that provides access to Parse.ly analytics
 - Get your credentials from https://dash.parse.ly/
 
 ## Installation
+
+### Quick Start with npx
+
+The easiest way to use this server is via `npx`. Add it to your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "parsely": {
+      "command": "npx",
+      "args": ["parsely-mcp"],
+      "env": {
+        "PARSELY_API_KEY": "your_api_key_here",
+        "PARSELY_API_SECRET": "your_api_secret_here"
+      }
+    }
+  }
+}
+```
+
+This uses stdio transport, which is the default and works with Claude Desktop, Claude Code, and other MCP clients.
 
 ### Local Development
 
@@ -56,10 +77,14 @@ npm run build
 
 6. Run the server:
 ```bash
+# Stdio transport (default)
 npm start
+
+# HTTP transport
+node dist/index.js --http
 ```
 
-The server will start on `http://localhost:8742` with the following endpoints:
+When using `--http`, the server starts on `http://localhost:8742` with:
 - **MCP endpoint**: `http://localhost:8742/mcp` - Streamable HTTP transport (POST, GET, DELETE)
 - **Health check**: `http://localhost:8742/health` - Server health status
 
@@ -139,7 +164,7 @@ All configuration is done via environment variables:
 | `PARSELY_API_KEY` | Yes | - | Your Parse.ly API key |
 | `PARSELY_API_SECRET` | Yes | - | Your Parse.ly API secret |
 | `PARSELY_API_BASE_URL` | No | `https://api.parse.ly/v2` | Parse.ly API base URL |
-| `PORT` | No | `3000` | Server port |
+| `PORT` | No | `8742` | Server port (HTTP mode only) |
 
 ## API Documentation
 

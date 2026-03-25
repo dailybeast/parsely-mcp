@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import {
 	CallToolRequestSchema,
@@ -380,23 +381,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 	}
 });
 
-// Start the HTTP server with Streamable HTTP transport
-async function main() {
+// Start with stdio transport (default, for npx usage)
+async function startStdio() {
+	const transport = new StdioServerTransport();
+	await server.connect(transport);
+	console.error("Parse.ly MCP server running on stdio");
+}
+
+// Start with HTTP transport (--http flag)
+async function startHttp() {
 	const app = express();
 	const port = config.server.port;
 
-	// Parse JSON request bodies
 	app.use(express.json());
 
-	// Health check endpoint
 	app.get("/health", (_req, res) => {
 		res.json({ status: "ok", service: "parsely-mcp" });
 	});
 
-	// Map of session ID to transport for stateful session management
 	const transports = new Map<string, StreamableHTTPServerTransport>();
 
-	// Handle all MCP requests on /mcp endpoint
 	app.all("/mcp", async (req, res) => {
 		const sessionId = req.headers["mcp-session-id"] as string | undefined;
 
@@ -411,14 +415,12 @@ async function main() {
 		}
 
 		if (req.method === "POST") {
-			// If we have a session ID and it maps to an existing transport, reuse it
 			if (sessionId && transports.has(sessionId)) {
 				const transport = transports.get(sessionId)!;
 				await transport.handleRequest(req, res, req.body);
 				return;
 			}
 
-			// New session: create a transport and connect it to a new server instance
 			const transport = new StreamableHTTPServerTransport({
 				sessionIdGenerator: () => randomUUID(),
 				onsessioninitialized: (id) => {
@@ -448,6 +450,15 @@ async function main() {
 		console.error(`Streamable HTTP endpoint: http://${host}:${port}/mcp`);
 		console.error(`API Key: ${config.parsely.apiKey.substring(0, 8)}...`);
 	});
+}
+
+async function main() {
+	const useHttp = process.argv.includes("--http");
+	if (useHttp) {
+		await startHttp();
+	} else {
+		await startStdio();
+	}
 }
 
 main().catch((error) => {
