@@ -6,7 +6,7 @@ import { resolve } from 'path';
 // Environment variables set directly in the environment take precedence
 const envPath = resolve(process.cwd(), '.env');
 if (existsSync(envPath)) {
-  dotenv.config({ path: envPath });
+  dotenv.config({ path: envPath, quiet: true });
 }
 // If .env doesn't exist, environment variables should already be set in the environment
 
